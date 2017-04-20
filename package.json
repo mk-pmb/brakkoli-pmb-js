@@ -1,5 +1,5 @@
 { "name": "brakkoli-pmb",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An SGML (XML, HTML) template engine that uses arrays for hierarchy.",
   "keywords": [
     "array",

@@ -13,7 +13,6 @@
 
   function ifObj(x, d) { return ((x && typeof x) === 'object' ? x : d); }
   function ifFun(x, d) { return (typeof x === 'function' ? x : d); }
-  function calcOrLookup(c, k) { return (ifFun(c) ? c(k) : c[k]); }
   function isStr(x) { return (typeof x === 'string'); }
   //function toUpper(x) { return String(x).toUpperCase(); }
 
@@ -37,9 +36,9 @@
 
   function fxCmdCore(fxcfg, cmd, arg, fxcmd) {
     if (!fxcfg) { throw new Error('False-y fxcfg!'); }
-    var func = ifFun(fxcfg.fxcmd[cmd] || EX.defaultCommands[cmd]);
+    var func = ifFun(fxcfg.cmds[cmd] || EX.defaultCommands[cmd]);
     if (!func) { throw new Error('Unsupported effect command: ' + cmd); }
-    return func(arg, fxcmd);
+    return func(arg, fxcmd, fxcfg);
   }
 
 
@@ -50,7 +49,7 @@
       } else if (!ifObj(spec)) {
         throw new TypeError('Expected an array as spec');
       }
-      return fxCmdCore(brakk.fxcfg, 'render', spec, { fx: brakk.fxcfg });
+      return fxCmdCore(brakk.fxcfg, 'render', spec);
     }
     brakk.fxcfg = Object.assign({}, EX.globalFxDefaults, fxdefaults);
     return brakk;
@@ -58,7 +57,7 @@
 
 
   EX.globalFxDefaults = {
-    fxcmd: false,
+    cmds: false,
     tplSlotRx: /&$([\w\-]*);/g,
     tplData: false,
   };
@@ -67,8 +66,8 @@
   EX.defaultCommands = dfCmd = {};
 
 
-  dfCmd.render = function (spec, parentFxcmd) {
-    var parentFxcfg = calcOrLookup(parentFxcmd, 'fx'), fxcfg = parentFxcfg;
+  dfCmd.render = function (spec, parentFxcmd, parentFxcfg) {
+    var fxcfg = (parentFxcfg || parentFxcmd('fx'));
 
     function fxcmd(cmd, arg) {
       if (cmd === 'fx') {

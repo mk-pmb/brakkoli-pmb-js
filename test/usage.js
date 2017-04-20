@@ -10,12 +10,6 @@ var tu = require('./test-util.js'),
 
 (function readmeDemo() {
   //#u
-  function renderCheckboxAnswer(ans) {
-    return [ [ 'li', { indentTags: 0,  }, [ 'label',
-        [ 'input type="checkbox" name="ingr[]">', { attr: { value: ans } } ],
-        '\n  ', ans ] ], '\n' ];
-  }
-
   var brakk = require('brakkoli-pmb')(), spec,
     recipes = { basicPage: require('brakkoli-html5-pmb/basic_page') };
 
@@ -26,14 +20,23 @@ var tu = require('./test-util.js'),
     pg.head.push({ link_css: 'quiz.css' });
     pg.body.push([ 'h1', pg.head.title ],
       [ 'form method="get" action="x-nope://"',
-        [ 'ul class="quiz"'].concat(answers.map(renderCheckboxAnswer)),
+        [ 'ul class="quiz"'].concat(answers.map(recipes.checkboxAnswer)),
         [ 'input type="submit">' ],
         ]);
     return pg;
   };
 
-  spec = recipes.createAndSharePage('sandwich', [ 'bacon', 'lettuce', 'tomato',
-    'cheese', 'onion', 'hot & spicy sauce', 'mustard', '"Ben\'s beans"' ]);
+  recipes.checkboxAnswer = function (ans) {
+    return [ [ 'li', { indentTags: 0,  }, [ 'label',
+        [ 'input type="checkbox" name="ingr[]">',
+          { attr: { value: ans } } ],
+        '\n  ', ans ] ], '\n' ];
+  };
+
+  spec = recipes.createAndSharePage('sandwich', [ 'bacon',
+    'lettuce', 'tomato', 'cheese', 'onion',
+    'hot & spicy sauce', 'mustard', '"Ben\'s beans"' ]);
+
   tu.expectEqual(brakk(spec),   expectedHTML);
   tu.expectEqual(spec,          expectedTree);
   //#r

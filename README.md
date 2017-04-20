@@ -9,6 +9,14 @@ An SGML (XML, HTML) template engine that uses arrays for hierarchy.
 <!--/#echo -->
 
 
+Early Access Warning
+--------------------
+
+This module is in the first stages of development.
+Expect major differences between docs and implementation.
+
+
+
 Usage
 -----
 
@@ -16,14 +24,8 @@ from [test/usage.js](test/usage.js):
 
 <!--#include file="test/usage.js" start="  //#u" stop="  //#r"
   outdent="  " code="javascript" -->
-<!--#verbatim lncnt="28" -->
+<!--#verbatim lncnt="31" -->
 ```javascript
-function renderCheckboxAnswer(ans) {
-  return [ [ 'li', { indentTags: 0,  }, [ 'label',
-      [ 'input type="checkbox" name="ingr[]">', { attr: { value: ans } } ],
-      '\n  ', ans ] ], '\n' ];
-}
-
 var brakk = require('brakkoli-pmb')(), spec,
   recipes = { basicPage: require('brakkoli-html5-pmb/basic_page') };
 
@@ -34,14 +36,23 @@ recipes.createAndSharePage = function (topic, answers) {
   pg.head.push({ link_css: 'quiz.css' });
   pg.body.push([ 'h1', pg.head.title ],
     [ 'form method="get" action="x-nope://"',
-      [ 'ul class="quiz"'].concat(answers.map(renderCheckboxAnswer)),
+      [ 'ul class="quiz"'].concat(answers.map(recipes.checkboxAnswer)),
       [ 'input type="submit">' ],
       ]);
   return pg;
 };
 
-spec = recipes.createAndSharePage('sandwich', [ 'bacon', 'lettuce', 'tomato',
-  'cheese', 'onion', 'hot & spicy sauce', 'mustard', '"Ben\'s beans"' ]);
+recipes.checkboxAnswer = function (ans) {
+  return [ [ 'li', { indentTags: 0,  }, [ 'label',
+      [ 'input type="checkbox" name="ingr[]">',
+        { attr: { value: ans } } ],
+      '\n  ', ans ] ], '\n' ];
+};
+
+spec = recipes.createAndSharePage('sandwich', [ 'bacon',
+  'lettuce', 'tomato', 'cheese', 'onion',
+  'hot & spicy sauce', 'mustard', '"Ben\'s beans"' ]);
+
 tu.expectEqual(brakk(spec),   expectedHTML);
 tu.expectEqual(spec,          expectedTree);
 ```
